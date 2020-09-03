@@ -7,8 +7,13 @@
 #define BIT_LGL_VALUE(data_, i_) 0 != (data_[i_ / 8] & (BIT_ONE >> (i_ % 8)))
 
 R_xlen_t bitlgl_xlength(SEXP pkd) {
+  R_xlen_t bitLglSize = Rf_xlength(VECTOR_ELT(pkd, BIT_LGL_DATA));
+  if (bitLglSize == 0) {
+    return 0;
+  }
+
   unsigned char extraBits = RAW(VECTOR_ELT(pkd, BIT_LGL_EXTRA_BITS))[0];
-  return Rf_xlength(VECTOR_ELT(pkd, BIT_LGL_DATA)) - 1 + extraBits;
+  return (bitLglSize - 1) * 8 + extraBits;
 }
 
 SEXP bitlgl_to_logical(SEXP pkd, R_xlen_t start, R_xlen_t end, R_xlen_t stride) {
@@ -36,7 +41,7 @@ SEXP pkd_c_bitlgl_length(SEXP pkd) {
 
 SEXP pkd_c_bitlgl_to_logical(SEXP pkd) {
   R_xlen_t size = bitlgl_xlength(pkd);
-  return bitlgl_to_logical(VECTOR_ELT(pkd, BIT_LGL_DATA), 0, size, 1);
+  return bitlgl_to_logical(pkd, 0, size, 1);
 }
 
 SEXP pkd_c_bitlgl_from_logical(SEXP lgl) {
@@ -44,21 +49,23 @@ SEXP pkd_c_bitlgl_from_logical(SEXP lgl) {
   int* pLgl = LOGICAL(lgl);
 
   R_xlen_t bitLglSize;
+  unsigned char nExtraBits;
   if (size == 0) {
     bitLglSize = 0;
+    nExtraBits = 0;
   } else {
-    bitLglSize = (size - 1) / 8 + 1;
+    bitLglSize = size / 8 + 1;
+    nExtraBits = (bitLglSize * 8) % size;
   }
 
-  unsigned char nExtraBits = (bitLglSize * 8) % size;
-  SEXP bitLgl = PROTECT(Rf_allocVector(RAWSXP, bitLglSize));
+  SEXP bitLgl = PROTECT(Rf_allocVector(RAWSXP, bitLglSize + 1));
 
   if (size > 0) {
     unsigned char* pData = RAW(bitLgl);
     unsigned char item;
 
     // set all but the last byte
-    for (R_xlen_t i = 0; i < (bitLglSize - 1); i++) {
+    for (R_xlen_t i = 0; i < bitLglSize; i++) {
       item = 0;
       for (int j = 0; j < 8; j++) {
         item = item | ((0 != pLgl[i * 8 + j]) << (8 - j));
@@ -70,14 +77,14 @@ SEXP pkd_c_bitlgl_from_logical(SEXP lgl) {
     // set the last byte
     unsigned char lastItem = 0;
     for (int j = 0; j < 8; j++) {
-      R_xlen_t lglIndex = (bitLglSize - 1) * 8 + j;
+      R_xlen_t lglIndex = bitLglSize * 8 + j;
       if (lglIndex >= size) {
         break;
       }
       lastItem = lastItem | ((0 != pLgl[lglIndex]) << (8 - j));
     }
 
-    pData[bitLglSize - 1] = lastItem;
+    pData[bitLglSize] = lastItem;
   }
 
   SEXP extraBits = PROTECT(Rf_allocVector(RAWSXP, 1));
