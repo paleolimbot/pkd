@@ -1,9 +1,25 @@
 
+#' Packed vectors
+#'
+#' @param x A pkd_vctr
+#' @param endian 0 for the most significant byte first (XDR),
+#'   1 for the least significant byte first.
+#'
+#' @export
+#'
+pkd_as_atomic <- function(x) {
+  UseMethod("pkd_as_atomic")
+}
+
+#' @rdname pkd_as_atomic
+#' @export
 pkd_swap_endian <- function(x) {
   assert_pkd_vctr(x)
   .Call(pkd_c_swap_endian, x)
 }
 
+#' @rdname pkd_as_atomic
+#' @export
 pkd_ensure_endian <- function(x, endian = pkd_system_endian()) {
   assert_pkd_vctr(x)
   if (endian == pkd_system_endian()) {
@@ -13,18 +29,33 @@ pkd_ensure_endian <- function(x, endian = pkd_system_endian()) {
   }
 }
 
+#' @rdname pkd_as_atomic
+#' @export
 pkd_system_endian <- function() {
   .Call(pkd_c_system_endian)
-}
-
-new_pkd_vctr <- function(x, subclass) {
-  structure(x, class = c(subclass, "pkd_vctr"))
 }
 
 #' @export
 length.pkd_vctr <-  function(x) {
   x <- unclass(x)
   length(x$data) / x$sizeof
+}
+
+#' @export
+print.pkd_vctr <- function(x, ...) {
+  cat(sprintf("<%s[%d]>\n", class(x)[1], length(x)))
+
+  if (length(x) > getOption("max.print", 1000)) {
+    print(pkd_as_atomic(utils::head(x, getOption("max.print", 1000))), ...)
+  } else {
+    print(pkd_as_atomic(x), ...)
+  }
+
+  invisible(x)
+}
+
+new_pkd_vctr <- function(x, subclass) {
+  structure(x, class = c(subclass, "pkd_vctr"))
 }
 
 validate_pkd_vctr <- function(x) {

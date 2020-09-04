@@ -14,7 +14,7 @@ SEXP pkd_c_swap_endian(SEXP pkd) {
     return pkd;
   }
 
-  SEXP newPkd = PROTECT(pkd_clone(pkd));
+  SEXP newPkd = PROTECT(pkd_clone(pkd, TRUE));
   int sizeOf = PKD_SIZEOF(pkd);
   R_xlen_t len = PKD_XLENGTH(pkd);
 

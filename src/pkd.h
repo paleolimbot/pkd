@@ -23,9 +23,14 @@
 #error "Can't detect system endianness at compile time"
 #endif
 
-static inline SEXP pkd_clone(SEXP pkd) {
-  SEXP newData = PROTECT(Rf_allocVector(RAWSXP, PKD_XSIZE(pkd)));
-  memcpy(RAW(newData), PKD_DATA(pkd), PKD_XSIZE(pkd));
+static inline SEXP pkd_clone(SEXP pkd, int copyData) {
+  SEXP newData;
+  if (copyData) {
+    newData = PROTECT(Rf_allocVector(RAWSXP, PKD_XSIZE(pkd)));
+    memcpy(RAW(newData), PKD_DATA(pkd), PKD_XSIZE(pkd));
+  } else {
+    newData = R_NilValue;
+  }
 
   SEXP newSizeOf = PROTECT(Rf_allocVector(INTSXP, 1));
   INTEGER(newSizeOf)[0] = PKD_SIZEOF(pkd);
@@ -33,24 +38,25 @@ static inline SEXP pkd_clone(SEXP pkd) {
   SEXP newEndian = PROTECT(Rf_allocVector(INTSXP, 1));
   INTEGER(newEndian)[0] = PKD_ENDIAN(pkd);
 
-  SEXP currentAttr = PKD_ATTR(pkd);
-  R_xlen_t currentAttrSize = Rf_xlength(currentAttr);
-  SEXP newAttr = PROTECT(Rf_allocVector(VECSXP, currentAttrSize));
-  for (R_xlen_t i = 0; i < currentAttrSize; i++) {
-    SET_VECTOR_ELT(newAttr, i, VECTOR_ELT(newAttr, i));
-  }
+  SEXP newAttr = PROTECT(Rf_duplicate(PKD_ATTR(pkd)));
 
-  SEXP newPkd = PROTECT(Rf_allocVector(VECSXP, 2));
+  const char* pkdNames[] = {"data", "sizeof", "endian", "attr", ""};
+  SEXP newPkd = PROTECT(Rf_mkNamed(VECSXP, pkdNames));
   SET_VECTOR_ELT(newPkd, 0, newData);
   SET_VECTOR_ELT(newPkd, 1, newSizeOf);
   SET_VECTOR_ELT(newPkd, 2, newEndian);
   SET_VECTOR_ELT(newPkd, 3, newAttr);
 
-  UNPROTECT(5);
+  if (copyData) {
+    UNPROTECT(5);
+  } else {
+    UNPROTECT(4);
+  }
+
   return newPkd;
 }
 
-static inline SEXP pkd_new() {
+static inline SEXP pkd_new(const char** attrNames) {
   SEXP newData = PROTECT(Rf_allocVector(RAWSXP, 0));
 
   SEXP newSizeOf = PROTECT(Rf_allocVector(INTSXP, 1));
@@ -59,9 +65,15 @@ static inline SEXP pkd_new() {
   SEXP newEndian = PROTECT(Rf_allocVector(INTSXP, 1));
   INTEGER(newEndian)[0] = NA_INTEGER;
 
-  SEXP newAttr = PROTECT(Rf_allocVector(VECSXP, 0L));
+  SEXP newAttr;
+  if (attrNames == NULL) {
+    newAttr = PROTECT(Rf_allocVector(VECSXP, 0L));
+  } else {
+    newAttr = PROTECT(Rf_mkNamed(VECSXP, attrNames));
+  }
 
-  SEXP newPkd = PROTECT(Rf_allocVector(VECSXP, 2));
+  const char* pkdNames[] = {"data", "sizeof", "endian", "attr", ""};
+  SEXP newPkd = PROTECT(Rf_mkNamed(VECSXP, pkdNames));
   SET_VECTOR_ELT(newPkd, 0, newData);
   SET_VECTOR_ELT(newPkd, 1, newSizeOf);
   SET_VECTOR_ELT(newPkd, 2, newEndian);

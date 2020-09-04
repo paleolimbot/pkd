@@ -6,6 +6,16 @@
 #define BIT_LGL_EXTRA_BITS(pkd) RAW(VECTOR_ELT(PKD_ATTR(pkd), 0))[0]
 #define BIT_LGL_VALUE(data_, i_) 0 != (data_[i_ / 8] & (BIT_ONE >> (i_ % 8)))
 
+static inline SEXP bitlgl_new() {
+  const char* names[] = {"extra_bits", ""};
+  SEXP pkd = PROTECT(pkd_new(names));
+  SEXP extraBits = PROTECT(Rf_allocVector(RAWSXP, 1));
+  RAW(extraBits)[0] = 0;
+  SET_VECTOR_ELT(PKD_ATTR(pkd), 0, extraBits);
+  UNPROTECT(2);
+  return pkd;
+}
+
 R_xlen_t bitlgl_xlength(SEXP pkd) {
   R_xlen_t bitLglSize = PKD_XSIZE(pkd) - 1;
   if (bitLglSize == -1) {
@@ -46,51 +56,51 @@ SEXP pkd_c_bitlgl_to_logical(SEXP pkd) {
 
 SEXP pkd_c_bitlgl_from_logical(SEXP lgl) {
   R_xlen_t size = Rf_xlength(lgl);
+  if (size == 0) {
+    return bitlgl_new();
+  }
+
   int* pLgl = LOGICAL(lgl);
 
-  R_xlen_t bitLglSize;
-  unsigned char nExtraBits;
-  if (size == 0) {
-    bitLglSize = 0;
-    nExtraBits = 0;
-  } else {
-    bitLglSize = size / 8 + 1;
-    nExtraBits = (bitLglSize * 8) % size;
+  R_xlen_t bitLglSize = (size - 1) / 8;
+  unsigned char nExtraBits = size % 8;
+  if (nExtraBits == 0) {
+    nExtraBits = 8;
   }
-
   SEXP bitLgl = PROTECT(Rf_allocVector(RAWSXP, bitLglSize + 1));
 
-  if (size > 0) {
-    unsigned char* pData = RAW(bitLgl);
-    unsigned char item;
+  unsigned char* pData = RAW(bitLgl);
+  unsigned char item;
+  unsigned char lglValue;
 
-    // set all but the last byte
-    for (R_xlen_t i = 0; i < bitLglSize; i++) {
-      item = 0;
-      for (int j = 0; j < 8; j++) {
-        item = item | ((0 != pLgl[i * 8 + j]) << (8 - j));
-      }
-
-      pData[i] = item;
-    }
-
-    // set the last byte
-    unsigned char lastItem = 0;
+  // set all but the last byte
+  for (R_xlen_t i = 0; i < bitLglSize; i++) {
+    item = 0;
     for (int j = 0; j < 8; j++) {
-      R_xlen_t lglIndex = bitLglSize * 8 + j;
-      if (lglIndex >= size) {
-        break;
-      }
-      lastItem = lastItem | ((0 != pLgl[lglIndex]) << (8 - j));
+      lglValue = 0 != pLgl[i * 8 + j];
+      item = item | (lglValue << (7 - j));
     }
 
-    pData[bitLglSize] = lastItem;
+    pData[i] = item;
   }
 
-  SEXP pkd = PROTECT(pkd_new());
+  // set the last byte
+  unsigned char lastItem = 0;
+  for (int j = 0; j < 8; j++) {
+    R_xlen_t lglIndex = bitLglSize * 8 + j;
+    if (lglIndex >= size) {
+      break;
+    }
+    lglValue = 0 != pLgl[lglIndex];
+    lastItem = lastItem | (lglValue << (7 - j));
+  }
+
+  pData[bitLglSize] = lastItem;
+
+  SEXP pkd = PROTECT(bitlgl_new());
   SET_VECTOR_ELT(pkd, 0, bitLgl);
   BIT_LGL_EXTRA_BITS(pkd) = nExtraBits;
 
-  UNPROTECT(3);
+  UNPROTECT(2);
   return pkd;
 }
