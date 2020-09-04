@@ -2,5 +2,8 @@
 
 S3method(as.logical,pkd_bitlgl)
 S3method(length,pkd_bitlgl)
+S3method(length,pkd_vctr)
 S3method(print,pkd_bitlgl)
+import(vctrs)
+importFrom(rlang,abort)
 useDynLib(pkd, .registration = TRUE)

@@ -1,23 +1,23 @@
 
 #include <Rinternals.h>
+#include "pkd.h"
 
 #define BIT_ONE ((unsigned char ) 0x80)
-#define BIT_LGL_DATA 0
-#define BIT_LGL_EXTRA_BITS 1
+#define BIT_LGL_EXTRA_BITS(pkd) RAW(VECTOR_ELT(PKD_ATTR(pkd), 0))[0]
 #define BIT_LGL_VALUE(data_, i_) 0 != (data_[i_ / 8] & (BIT_ONE >> (i_ % 8)))
 
 R_xlen_t bitlgl_xlength(SEXP pkd) {
-  R_xlen_t bitLglSize = Rf_xlength(VECTOR_ELT(pkd, BIT_LGL_DATA));
-  if (bitLglSize == 0) {
+  R_xlen_t bitLglSize = PKD_XSIZE(pkd) - 1;
+  if (bitLglSize == -1) {
     return 0;
   }
 
-  unsigned char extraBits = RAW(VECTOR_ELT(pkd, BIT_LGL_EXTRA_BITS))[0];
-  return (bitLglSize - 1) * 8 + extraBits;
+  unsigned char extraBits = BIT_LGL_EXTRA_BITS(pkd);
+  return bitLglSize * 8 + extraBits;
 }
 
 SEXP bitlgl_to_logical(SEXP pkd, R_xlen_t start, R_xlen_t end, R_xlen_t stride) {
-  unsigned char* data = RAW(VECTOR_ELT(pkd, BIT_LGL_DATA));
+  unsigned char* data = PKD_DATA(pkd);
 
   SEXP lgl = PROTECT(Rf_allocVector(LGLSXP, end - start));
   int* pLgl = INTEGER(lgl);
@@ -87,12 +87,9 @@ SEXP pkd_c_bitlgl_from_logical(SEXP lgl) {
     pData[bitLglSize] = lastItem;
   }
 
-  SEXP extraBits = PROTECT(Rf_allocVector(RAWSXP, 1));
-  RAW(extraBits)[0] = nExtraBits;
-
-  SEXP pkd = PROTECT(Rf_allocVector(VECSXP, 2));
-  SET_VECTOR_ELT(pkd, BIT_LGL_DATA, bitLgl);
-  SET_VECTOR_ELT(pkd, BIT_LGL_EXTRA_BITS, extraBits);
+  SEXP pkd = PROTECT(pkd_new());
+  SET_VECTOR_ELT(pkd, 0, bitLgl);
+  BIT_LGL_EXTRA_BITS(pkd) = nExtraBits;
 
   UNPROTECT(3);
   return pkd;

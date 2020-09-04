@@ -7,11 +7,18 @@ bitlgl <- function(x, extra_bits = 0L) {
     extra_bits <- as.raw(8L);
   }
 
-  new_pkd_bitlgl(list(data = as.raw(x), extra_bits = as.raw(extra_bits)[1]))
+  new_pkd_bitlgl(
+    list(
+      data = as.raw(x),
+      sizeof = 1L,
+      endian = NA_integer_,
+      attr = list(extra_bits = as.raw(extra_bits)[1])
+    )
+  )
 }
 
 new_pkd_bitlgl <- function(x) {
-  structure(x, class = c("pkd_bitlgl", "pkd_vctr"))
+  new_pkd_vctr(x, subclass = "pkd_bitlgl")
 }
 
 #' @export

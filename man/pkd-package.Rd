@@ -8,6 +8,14 @@
 \description{
 Compact representations of integer and float vectors.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/paleolimbot/pkd}
+  \item Report bugs at \url{https://github.com/paleolimbot/pkd/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Dewey Dunnington \email{dewey@fishandwhistle.net} (\href{https://orcid.org/0000-0002-9415-4582}{ORCID})
 
