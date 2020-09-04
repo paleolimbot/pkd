@@ -26,13 +26,13 @@ R_xlen_t bitlgl_xlength(SEXP pkd) {
   return bitLglSize * 8 + extraBits;
 }
 
-SEXP bitlgl_to_logical(SEXP pkd, R_xlen_t start, R_xlen_t end, R_xlen_t stride) {
+SEXP bitlgl_to_logical(SEXP pkd, R_xlen_t start, R_xlen_t end) {
   unsigned char* data = PKD_DATA(pkd);
 
   SEXP lgl = PROTECT(Rf_allocVector(LGLSXP, end - start));
   int* pLgl = INTEGER(lgl);
 
-  for (R_xlen_t i = start; i < end; i += stride) {
+  for (R_xlen_t i = start; i < end; i++) {
     pLgl[i] = BIT_LGL_VALUE(data, i);
   }
 
@@ -51,7 +51,7 @@ SEXP pkd_c_bitlgl_length(SEXP pkd) {
 
 SEXP pkd_c_bitlgl_to_logical(SEXP pkd) {
   R_xlen_t size = bitlgl_xlength(pkd);
-  return bitlgl_to_logical(pkd, 0, size, 1);
+  return bitlgl_to_logical(pkd, 0, size);
 }
 
 SEXP pkd_c_bitlgl_from_logical(SEXP lgl) {
