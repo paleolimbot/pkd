@@ -56,5 +56,6 @@ pkd_as_r_vector.pkd_lgl8 <- function(x) {
 
 #' @export
 as.logical.pkd_lgl8 <- function(x, ...) {
+  # much faster than a custom method
   as.logical(unclass(x)$data)
 }

@@ -16,20 +16,6 @@ SEXP lgl8_new() {
   return pkd;
 }
 
-SEXP pkd_c_lgl8_to_logical(SEXP pkd) {
-  R_xlen_t size = PKD_XLENGTH(pkd);
-  SEXP lgl = PROTECT(Rf_allocVector(LGLSXP, size));
-  int* pLgl = LOGICAL(lgl);
-  unsigned char* data = PKD_DATA(pkd);
-
-  for (R_xlen_t i = 0; i < size; i++) {
-    pLgl[i] = data[i];
-  }
-
-  UNPROTECT(1);
-  return lgl;
-}
-
 SEXP pkd_c_lgl8_from_logical(SEXP lgl) {
   R_xlen_t size = Rf_xlength(lgl);
   int* pLgl = LOGICAL(lgl);
