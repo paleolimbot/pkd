@@ -23,13 +23,23 @@
 #error "Can't detect system endianness at compile time"
 #endif
 
+#define NEW_PKD_MAYBE_COPY(pkd, newPkd, clone)                 \
+SEXP newPkd;                                                   \
+if (LOGICAL(clone)[0]) {                                       \
+  newPkd = PROTECT(pkd_clone(pkd, TRUE));                      \
+} else {                                                       \
+  newPkd = pkd;                                                \
+}
+
+#define NEW_PKD_MAYBE_UNPROTECT(clone) if (LOGICAL(clone)[0]) UNPROTECT(1)
+
 static inline SEXP pkd_clone(SEXP pkd, int copyData) {
   SEXP newData;
   if (copyData) {
     newData = PROTECT(Rf_allocVector(RAWSXP, PKD_XSIZE(pkd)));
     memcpy(RAW(newData), PKD_DATA(pkd), PKD_XSIZE(pkd));
   } else {
-    newData = R_NilValue;
+    newData = PROTECT(Rf_allocVector(RAWSXP, 0));
   }
 
   SEXP newSizeOf = PROTECT(Rf_allocVector(INTSXP, 1));
@@ -47,12 +57,7 @@ static inline SEXP pkd_clone(SEXP pkd, int copyData) {
   SET_VECTOR_ELT(newPkd, 2, newEndian);
   SET_VECTOR_ELT(newPkd, 3, newAttr);
 
-  if (copyData) {
-    UNPROTECT(5);
-  } else {
-    UNPROTECT(4);
-  }
-
+  UNPROTECT(5);
   return newPkd;
 }
 

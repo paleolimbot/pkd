@@ -6,6 +6,7 @@
 \alias{as_lgl1.default}
 \alias{as_lgl1.pkd_lgl1}
 \alias{as_lgl1.logical}
+\alias{new_pkd_lgl1}
 \title{Bit-packed logical}
 \usage{
 lgl1(x = raw(), extra_bits = 0L)
@@ -17,6 +18,8 @@ as_lgl1(x, ...)
 \method{as_lgl1}{pkd_lgl1}(x, ...)
 
 \method{as_lgl1}{logical}(x, ...)
+
+new_pkd_lgl1(x)
 }
 \arguments{
 \item{x}{A \code{\link[=raw]{raw()}} vector of bytes with each bit representing an

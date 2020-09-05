@@ -56,13 +56,20 @@ as_lgl1.logical <- function(x, ...) {
   new_pkd_lgl1(.Call(pkd_c_lgl1_from_logical, x))
 }
 
+#' @rdname lgl1
+#' @export
 new_pkd_lgl1 <- function(x) {
   new_pkd_vctr(x, subclass = "pkd_lgl1")
 }
 
 #' @export
-pkd_as_atomic.pkd_lgl1 <- function(x) {
+pkd_as_r_vector.pkd_lgl1 <- function(x) {
   as.logical(x)
+}
+
+#' @export
+as.logical.pkd_lgl1 <- function(x, ...) {
+  .Call(pkd_c_lgl1_to_logical, x)
 }
 
 #' @export
@@ -70,7 +77,17 @@ length.pkd_lgl1 <- function(x) {
   .Call(pkd_c_lgl1_length, x)
 }
 
+# these aren't efficient, but it's unclear whether or not
+# optimization of a bit1 subset/subset assign is needed
+
 #' @export
-as.logical.pkd_lgl1 <- function(x, ...) {
-  .Call(pkd_c_lgl1_to_logical, x)
+`[.pkd_lgl1` <- function(x, i) {
+  as_lgl1.logical(.Call(pkd_c_lgl1_to_logical, x)[i])
+}
+
+#' @export
+`[<-.pkd_lgl1` <- function(x, i, value) {
+  lgl <- .Call(pkd_c_lgl1_to_logical, x)
+  lgl[i] <- value
+  as_lgl1.logical(lgl)
 }
