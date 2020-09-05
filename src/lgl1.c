@@ -6,7 +6,7 @@
 #define BIT_LGL_EXTRA_BITS(pkd) RAW(VECTOR_ELT(PKD_ATTR(pkd), 0))[0]
 #define BIT_LGL_VALUE(data_, i_) 0 != (data_[i_ / 8] & (BIT_ONE >> (i_ % 8)))
 
-static inline SEXP bitlgl_new() {
+static inline SEXP lgl1_new() {
   const char* names[] = {"extra_bits", ""};
   SEXP pkd = PROTECT(pkd_new(names));
   SEXP extraBits = PROTECT(Rf_allocVector(RAWSXP, 1));
@@ -16,7 +16,7 @@ static inline SEXP bitlgl_new() {
   return pkd;
 }
 
-R_xlen_t bitlgl_xlength(SEXP pkd) {
+R_xlen_t lgl1_xlength(SEXP pkd) {
   R_xlen_t bitLglSize = PKD_XSIZE(pkd) - 1;
   if (bitLglSize == -1) {
     return 0;
@@ -26,7 +26,7 @@ R_xlen_t bitlgl_xlength(SEXP pkd) {
   return bitLglSize * 8 + extraBits;
 }
 
-SEXP bitlgl_to_logical(SEXP pkd, R_xlen_t start, R_xlen_t end) {
+SEXP lgl1_to_logical(SEXP pkd, R_xlen_t start, R_xlen_t end) {
   unsigned char* data = PKD_DATA(pkd);
 
   SEXP lgl = PROTECT(Rf_allocVector(LGLSXP, end - start));
@@ -40,8 +40,8 @@ SEXP bitlgl_to_logical(SEXP pkd, R_xlen_t start, R_xlen_t end) {
   return lgl;
 }
 
-SEXP pkd_c_bitlgl_length(SEXP pkd) {
-  R_xlen_t size = bitlgl_xlength(pkd);
+SEXP pkd_c_lgl1_length(SEXP pkd) {
+  R_xlen_t size = lgl1_xlength(pkd);
 
   SEXP length = PROTECT(Rf_allocVector(INTSXP, 1));
   INTEGER(length)[0] = size;
@@ -49,15 +49,15 @@ SEXP pkd_c_bitlgl_length(SEXP pkd) {
   return length;
 }
 
-SEXP pkd_c_bitlgl_to_logical(SEXP pkd) {
-  R_xlen_t size = bitlgl_xlength(pkd);
-  return bitlgl_to_logical(pkd, 0, size);
+SEXP pkd_c_lgl1_to_logical(SEXP pkd) {
+  R_xlen_t size = lgl1_xlength(pkd);
+  return lgl1_to_logical(pkd, 0, size);
 }
 
-SEXP pkd_c_bitlgl_from_logical(SEXP lgl) {
+SEXP pkd_c_lgl1_from_logical(SEXP lgl) {
   R_xlen_t size = Rf_xlength(lgl);
   if (size == 0) {
-    return bitlgl_new();
+    return lgl1_new();
   }
 
   int* pLgl = LOGICAL(lgl);
@@ -97,7 +97,7 @@ SEXP pkd_c_bitlgl_from_logical(SEXP lgl) {
 
   pData[bitLglSize] = lastItem;
 
-  SEXP pkd = PROTECT(bitlgl_new());
+  SEXP pkd = PROTECT(lgl1_new());
   SET_VECTOR_ELT(pkd, 0, bitLgl);
   BIT_LGL_EXTRA_BITS(pkd) = nExtraBits;
 

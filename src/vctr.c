@@ -9,12 +9,18 @@ SEXP pkd_c_system_endian() {
   return out;
 }
 
-SEXP pkd_c_swap_endian(SEXP pkd) {
+SEXP pkd_c_swap_endian(SEXP pkd, SEXP clone) {
   if (PKD_ENDIAN(pkd) == NA_REAL) {
     return pkd;
   }
 
-  SEXP newPkd = PROTECT(pkd_clone(pkd, TRUE));
+  SEXP newPkd;
+  if (LOGICAL(clone)[0]) {
+    newPkd = PROTECT(pkd_clone(pkd, TRUE));
+  } else {
+    newPkd = pkd;
+  }
+
   int sizeOf = PKD_SIZEOF(pkd);
   R_xlen_t len = PKD_XLENGTH(pkd);
 
@@ -36,6 +42,8 @@ SEXP pkd_c_swap_endian(SEXP pkd) {
     for (R_xlen_t i = 0; i < len; i++) {
       newData[i] = bswap_64(data[i]);
     }
+  } else if (sizeOf != 1) {
+    Rf_error("Can't swap endian with sizeof=%d", sizeOf);
   }
 
   if (PKD_ENDIAN(pkd) == PKD_BIG_ENDIAN) {
@@ -44,6 +52,9 @@ SEXP pkd_c_swap_endian(SEXP pkd) {
     PKD_ENDIAN(newPkd) = PKD_LITTLE_ENDIAN;
   }
 
-  UNPROTECT(1);
+  if (LOGICAL(clone)[0]) {
+    UNPROTECT(1);
+  }
+
   return newPkd;
 }
