@@ -5,6 +5,7 @@
 \alias{pkd_swap_endian}
 \alias{pkd_ensure_endian}
 \alias{pkd_system_endian}
+\alias{new_pkd_vctr}
 \title{Packed vectors}
 \usage{
 pkd_as_r_vector(x)
@@ -14,6 +15,8 @@ pkd_swap_endian(x)
 pkd_ensure_endian(x, endian = pkd_system_endian())
 
 pkd_system_endian()
+
+new_pkd_vctr(x, subclass)
 }
 \arguments{
 \item{x}{A pkd_vctr}

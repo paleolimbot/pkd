@@ -57,6 +57,8 @@ static inline SEXP pkd_clone(SEXP pkd, int copyData) {
   SET_VECTOR_ELT(newPkd, 2, newEndian);
   SET_VECTOR_ELT(newPkd, 3, newAttr);
 
+  Rf_setAttrib(newPkd, Rf_install("class"), Rf_S3Class(pkd));
+
   UNPROTECT(5);
   return newPkd;
 }

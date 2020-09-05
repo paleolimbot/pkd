@@ -40,7 +40,7 @@ as_lgl8.pkd_lgl8 <- function(x, ...) {
 #' @rdname lgl8
 #' @export
 as_lgl8.logical <- function(x, ...) {
-  new_pkd_lgl8(.Call(pkd_c_lgl8_from_logical, x))
+  .Call(pkd_c_lgl8_from_logical, x)
 }
 
 #' @rdname lgl8
@@ -56,5 +56,5 @@ pkd_as_r_vector.pkd_lgl8 <- function(x) {
 
 #' @export
 as.logical.pkd_lgl8 <- function(x, ...) {
-  .Call(pkd_c_lgl8_to_logical, x)
+  as.logical(unclass(x)$data)
 }

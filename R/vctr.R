@@ -54,6 +54,8 @@ print.pkd_vctr <- function(x, ...) {
   invisible(x)
 }
 
+#' @rdname pkd_as_r_vector
+#' @export
 new_pkd_vctr <- function(x, subclass) {
   structure(x, class = c(subclass, "pkd_vctr"))
 }
@@ -83,8 +85,22 @@ validate_pkd_vctr <- function(x) {
 }
 
 #' @export
+names.pkd_vctr <- function(x) {
+  NULL
+}
+
+#' @export
+`names<-.pkd_vctr` <- function(x, value) {
+  if (is.null(value)) {
+    abort("Can't set names of a 'pkd_vctr'")
+  }
+
+  x
+}
+
+#' @export
 `[.pkd_vctr` <- function(x, i) {
-  .Call(pkd_c_subset, x, i)
+  new_pkd_vctr(.Call(pkd_c_subset, x, i), subclass = setdiff(class(x), "pkd_vctr"))
 }
 
 #' @export
@@ -94,5 +110,5 @@ validate_pkd_vctr <- function(x) {
 
 #' @export
 `$.pkd_vctr` <- function(x, i) {
-  abort("`$` is not implemented for objects of class 'pkd_vctr'")
+  abort("`$` is not meaningful for objects of class 'pkd_vctr'")
 }

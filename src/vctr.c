@@ -2,7 +2,7 @@
 #include "pkd.h"
 #include <stdint.h>
 
-SEXP pkd_c_subset_lgl(SEXP pkd, SEXP lgl) {
+SEXP pkd_subset_lgl(SEXP pkd, SEXP lgl) {
   R_xlen_t size = PKD_XLENGTH(pkd);
   R_xlen_t lglSize = Rf_xlength(lgl);
   int* pLgl = LOGICAL(lgl);
@@ -43,6 +43,16 @@ SEXP pkd_c_subset_lgl(SEXP pkd, SEXP lgl) {
 
   UNPROTECT(2);
   return newPkd;
+}
+
+SEXP pkd_c_subset(SEXP pkd, SEXP indices) {
+  if (TYPEOF(indices) == LGLSXP) {
+    return pkd_subset_lgl(pkd, indices);
+  } else {
+    Rf_error("Can't subset 'pkd_vctr' with this type of object");
+  }
+
+  return R_NilValue;
 }
 
 SEXP pkd_c_system_endian() {

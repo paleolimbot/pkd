@@ -6,7 +6,13 @@ SEXP lgl8_new() {
   SEXP pkd = PROTECT(pkd_new(NULL));
   PKD_SIZEOF(pkd) = 1;
   PKD_ENDIAN(pkd) = NA_INTEGER;
-  UNPROTECT(1);
+
+  SEXP s3class = PROTECT(Rf_allocVector(STRSXP, 2));
+  SET_STRING_ELT(s3class, 0, Rf_mkChar("pkd_lgl8"));
+  SET_STRING_ELT(s3class, 1, Rf_mkChar("pkd_vctr"));
+  Rf_setAttrib(pkd, Rf_install("class"), s3class);
+
+  UNPROTECT(2);
   return pkd;
 }
 
