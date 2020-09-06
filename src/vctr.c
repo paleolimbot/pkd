@@ -30,11 +30,10 @@ SEXP pkd_subset_lgl(SEXP pkd, SEXP lgl) {
   unsigned char* outData = RAW(lgl8);
   int sizeOf = PKD_SIZEOF(pkd);
 
-  R_xlen_t outOffset = 0;
   for (R_xlen_t i = 0; i < size; i++) {
     if (pLgl[i]) {
-      memcpy(outData + outOffset, data + (i * sizeOf), sizeOf);
-      outOffset += sizeOf;
+      memcpy(outData, data + (i * sizeOf), sizeOf);
+      outData += sizeOf;
     }
   }
 
@@ -45,9 +44,55 @@ SEXP pkd_subset_lgl(SEXP pkd, SEXP lgl) {
   return newPkd;
 }
 
+SEXP pkd_subset_dbl(SEXP pkd, SEXP dbl) {
+  int sizeOf = PKD_SIZEOF(pkd);
+  unsigned char* data = PKD_DATA(pkd);
+
+  R_xlen_t dblSize = Rf_xlength(dbl);
+  double* pDbl = REAL(dbl);
+
+  SEXP lgl8 = PROTECT(Rf_allocVector(RAWSXP, dblSize * sizeOf));
+  unsigned char* newData = RAW(lgl8);
+
+  for (R_xlen_t i = 0; i < dblSize; i++) {
+    memcpy(newData, data + ((R_xlen_t) pDbl[i] - 1) * sizeOf, sizeOf);
+    newData += sizeOf;
+  }
+
+  SEXP newPkd = PROTECT(pkd_clone(pkd, FALSE));
+  SET_VECTOR_ELT(newPkd, 0, lgl8);
+  UNPROTECT(2);
+  return newPkd;
+}
+
+SEXP pkd_subset_int(SEXP pkd, SEXP int_) {
+  int sizeOf = PKD_SIZEOF(pkd);
+  unsigned char* data = PKD_DATA(pkd);
+
+  R_xlen_t intSize = Rf_xlength(int_);
+  int* pInt = INTEGER(int_);
+
+  SEXP lgl8 = PROTECT(Rf_allocVector(RAWSXP, intSize * sizeOf));
+  unsigned char* newData = RAW(lgl8);
+
+  for (R_xlen_t i = 0; i < intSize; i++) {
+    memcpy(newData, data + ((pInt[i] - 1) * sizeOf), sizeOf);
+    newData += sizeOf;
+  }
+
+  SEXP newPkd = PROTECT(pkd_clone(pkd, FALSE));
+  SET_VECTOR_ELT(newPkd, 0, lgl8);
+  UNPROTECT(2);
+  return newPkd;
+}
+
 SEXP pkd_c_subset(SEXP pkd, SEXP indices) {
   if (TYPEOF(indices) == LGLSXP) {
     return pkd_subset_lgl(pkd, indices);
+  } else if (TYPEOF(indices) == REALSXP) {
+    return pkd_subset_dbl(pkd, indices);
+  } else if (TYPEOF(indices) == INTSXP) {
+    return pkd_subset_int(pkd, indices);
   } else {
     Rf_error("Can't subset 'pkd_vctr' with this type of object");
   }

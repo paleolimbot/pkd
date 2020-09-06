@@ -23,6 +23,8 @@ new_pkd_vctr(x, subclass)
 
 \item{endian}{0 for the most significant byte first (big endian),
 1 for the least significant byte first (little endian).}
+
+\item{subclass}{The pkd_vctr subclass}
 }
 \description{
 Packed vectors

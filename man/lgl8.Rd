@@ -25,6 +25,8 @@ new_pkd_lgl8(x)
 \item{x}{A \code{\link[=raw]{raw()}} vector of bytes with each element representing an
 individual logical value. Values of \code{0x00} are considered \code{FALSE};
 all other values are considered \code{TRUE}.}
+
+\item{...}{Unused}
 }
 \value{
 A pkd_vctr of class pkd_lgl8

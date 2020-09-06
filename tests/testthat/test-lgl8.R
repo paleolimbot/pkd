@@ -22,7 +22,12 @@ test_that("lgl1 subset/subset assign works", {
     as.logical(lgl[c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE)]),
     c(FALSE, TRUE, FALSE, FALSE, TRUE)
   )
-  #expect_identical(as.logical(lgl[1:5]), c(FALSE, TRUE, FALSE, FALSE, FALSE))
+
+  expect_identical(lgl[TRUE], lgl)
+  expect_identical(lgl[FALSE], lgl8())
+
+  expect_identical(as.logical(lgl[as.integer(1:5)]), as.logical(lgl)[1:5])
+  expect_identical(as.logical(lgl[as.double(1:5)]), as.logical(lgl)[1:5])
   #lgl[1] <- TRUE
   #expect_identical(lgl, lgl1(0x80))
   #expect_identical(lgl[[1]], lgl1(0x80, extra_bits = 1))
