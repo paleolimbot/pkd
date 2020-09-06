@@ -13,7 +13,7 @@ test_that("lgl8 logical conversion works", {
 
   expect_identical(as_lgl8(logical()), lgl8(raw()))
   expect_identical(as_lgl8(c(TRUE, FALSE, TRUE)), lgl8(c(0x01, 0x00, 0x01)))
-  expect_error(as_lgl8(NA), "Can't store NA values")
+  expect_warning(as_lgl8(NA), "out-of-range")
 })
 
 test_that("lgl1 subset/subset assign works", {

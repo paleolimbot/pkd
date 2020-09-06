@@ -4,6 +4,7 @@
 #' @param x A pkd_vctr
 #' @param endian 0 for the most significant byte first (big endian),
 #'   1 for the least significant byte first (little endian).
+#' @param subclass The pkd_vctr subclass
 #'
 #' @export
 #'
@@ -100,6 +101,7 @@ names.pkd_vctr <- function(x) {
 
 #' @export
 `[.pkd_vctr` <- function(x, i) {
+  # class setting should be handled in C code but isn't for some reason
   new_pkd_vctr(.Call(pkd_c_subset, x, i), subclass = setdiff(class(x), "pkd_vctr"))
 }
 

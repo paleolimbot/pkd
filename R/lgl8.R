@@ -4,6 +4,7 @@
 #' @param x A [raw()] vector of bytes with each element representing an
 #'   individual logical value. Values of `0x00` are considered `FALSE`;
 #'   all other values are considered `TRUE`.
+#' @param ... Unused
 #'
 #' @return A pkd_vctr of class pkd_lgl8
 #' @export
@@ -40,7 +41,16 @@ as_lgl8.pkd_lgl8 <- function(x, ...) {
 #' @rdname lgl8
 #' @export
 as_lgl8.logical <- function(x, ...) {
-  .Call(pkd_c_lgl8_from_logical, x)
+  # NA values do not throw an error but do give an ominous warning here
+  # this is much faster than a custom method
+  new_pkd_lgl8(
+    list(
+      data = as.raw(x),
+      sizeof = 1L,
+      endian = NA_integer_,
+      attr = list()
+    )
+  )
 }
 
 #' @rdname lgl8
