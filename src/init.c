@@ -7,6 +7,7 @@ extern SEXP pkd_c_lgl1_length(SEXP pkd);
 extern SEXP pkd_c_lgl1_to_logical(SEXP pkd);
 extern SEXP pkd_c_lgl1_from_logical(SEXP lgl);
 extern SEXP pkd_c_subset(SEXP pkd, SEXP indices);
+extern SEXP pkd_c_expand_indices(SEXP pkd, SEXP indices);
 extern SEXP pkd_c_system_endian();
 extern SEXP pkd_c_swap_endian(SEXP pkd, SEXP clone);
 
@@ -15,6 +16,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"pkd_c_lgl1_to_logical", (DL_FUNC) &pkd_c_lgl1_to_logical, 1},
   {"pkd_c_lgl1_from_logical", (DL_FUNC) &pkd_c_lgl1_from_logical, 1},
   {"pkd_c_subset", (DL_FUNC) &pkd_c_subset, 2},
+  {"pkd_c_expand_indices", (DL_FUNC) &pkd_c_expand_indices, 2},
   {"pkd_c_system_endian", (DL_FUNC) &pkd_c_system_endian, 0},
   {"pkd_c_swap_endian", (DL_FUNC) &pkd_c_swap_endian, 2},
   {NULL, NULL, 0}

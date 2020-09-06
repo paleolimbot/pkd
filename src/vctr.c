@@ -100,6 +100,44 @@ SEXP pkd_c_subset(SEXP pkd, SEXP indices) {
   return R_NilValue;
 }
 
+SEXP pkd_c_expand_indices(SEXP pkd, SEXP indices) {
+  int sizeOf = PKD_SIZEOF(pkd);
+  R_xlen_t indexSize = Rf_xlength(indices);
+
+  SEXP newIndices;
+  if (TYPEOF(indices) == LGLSXP) {
+    if (indexSize != PKD_XLENGTH(pkd)) {
+      Rf_error(
+        "Can't subset-assign pkd_vctr of size %d with logical vector of size %d",
+        PKD_XLENGTH(pkd),
+        indexSize
+      );
+    }
+
+    newIndices = PROTECT(Rf_allocVector(LGLSXP, indexSize * sizeOf));
+    int* pNewIndices = LOGICAL(newIndices);
+    int* pIndices = LOGICAL(indices);
+
+    for (R_xlen_t i = 0; i < indexSize; i++) {
+      int newValue = 0 != pIndices[i];
+      for (int j = 0; j < sizeOf; j++) {
+        pNewIndices[i + j] = newValue;
+      }
+    }
+  //} else if (TYPEOF(indices) == REALSXP) {
+    //newIndices = PROTECT(Rf_allocVector(REALSXP, size));
+
+  //} else if (TYPEOF(indices) == INTSXP) {
+    //newIndices = PROTECT(Rf_allocVector(INTSXP, size));
+
+  } else {
+    Rf_error("Can't subset-assign a 'pkd_vctr' with this type of object");
+  }
+
+  UNPROTECT(1);
+  return newIndices;
+}
+
 SEXP pkd_c_system_endian() {
   SEXP out = PROTECT(Rf_allocVector(INTSXP, 1));
   INTEGER(out)[0] = PKD_SYSTEM_ENDIAN;

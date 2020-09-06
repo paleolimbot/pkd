@@ -28,7 +28,17 @@ test_that("lgl1 subset/subset assign works", {
 
   expect_identical(as.logical(lgl[as.integer(1:5)]), as.logical(lgl)[1:5])
   expect_identical(as.logical(lgl[as.double(1:5)]), as.logical(lgl)[1:5])
-  #lgl[1] <- TRUE
-  #expect_identical(lgl, lgl1(0x80))
-  #expect_identical(lgl[[1]], lgl1(0x80, extra_bits = 1))
+
+  lgl_cpy <- lgl
+  expect_error(lgl_cpy[c(TRUE, TRUE)] <- TRUE, "Can't subset-assign")
+
+  # paired number of sets
+  lgl_cpy[c(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE)] <- c(TRUE, TRUE)
+  expect_identical(as.logical(lgl_cpy), c(TRUE, TRUE, FALSE, FALSE, TRUE, TRUE))
+
+  # recycled number of sets
+  lgl_cpy <- lgl
+  lgl_cpy[c(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE)] <- TRUE
+  expect_identical(as.logical(lgl_cpy), c(TRUE, TRUE, FALSE, FALSE, TRUE, TRUE))
+
 })

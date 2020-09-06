@@ -23,7 +23,7 @@ pkd_swap_endian <- function(x) {
 #' @export
 pkd_ensure_endian <- function(x, endian = pkd_system_endian()) {
   assert_pkd_vctr(x)
-  if (endian == pkd_system_endian()) {
+  if (identical(unclass(x)$endian, endian)) {
     x
   } else {
     .Call(pkd_c_swap_endian, x)
@@ -113,4 +113,17 @@ names.pkd_vctr <- function(x) {
 #' @export
 `$.pkd_vctr` <- function(x, i) {
   abort("`$` is not meaningful for objects of class 'pkd_vctr'")
+}
+
+#' @export
+`[<-.pkd_vctr` <- function(x, i, value) {
+  subclass <- class(x)[1]
+  x <- unclass(x)
+  coerce_method <- match.fun(gsub("pkd_", "as_", subclass, fixed = TRUE))
+  value <- coerce_method(value)
+  value <- unclass(pkd_ensure_endian(value, x$endian))
+  indices <- .Call(pkd_c_expand_indices, x, i)
+  x$data[indices] <- value$data
+
+  new_pkd_vctr(x, subclass = subclass)
 }
