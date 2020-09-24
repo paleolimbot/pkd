@@ -1,0 +1,83 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# pkd
+
+<!-- badges: start -->
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![R build status](https://github.com/paleolimbot/pkd/workflows/R-CMD-check/badge.svg)](https://github.com/paleolimbot/pkd/actions)
+[![Codecov test coverage](https://codecov.io/gh/paleolimbot/pkd/branch/master/graph/badge.svg)](https://codecov.io/gh/paleolimbot/pkd?branch=master)
+<!-- badges: end -->
+
+The goal of pkd is to provide cross-platform integer and floating-point vector types commonly used to read and write files.
+
+## Installation
+
+You can install the development version from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("paleolimbot/pkd")
+```
+## Example
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(pkd)
+
+# logical
+lgl1(0xff)
+lgl8(0x01)
+
+# integer
+int8(0xff)
+uint8(0xff)
+int16(c(0xff, 0xff))
+uint16(c(0xff, 0xff))
+int32(c(0xff, 0xff, 0xff, 0xff))
+uint32(c(0xff, 0xff, 0xff, 0xff))
+int64(c(0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff))
+uint64(c(0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff))
+
+# floating-point
+as_dbl32(12.34)
+as_dbl64(12.34)
+```
+
+Currently, `Math` and `Ops` are not implemented; however, coercion to `integer()`/`double()`, subsetting, endian-swapping, and subset-assignment are supported:
+
+```{r}
+x <- as_uint8(1:10)
+x
+x[1:5]
+
+x[5] <- 255
+x
+
+uint32(c(0x00, 0x00, 0x00, 0x01), endian = 1L)
+uint32(c(0x00, 0x00, 0x00, 0x01), endian = 0L)
+
+pkd_ensure_endian(
+  uint32(c(0x00, 0x00, 0x00, 0x01), endian = 0L), 
+  endian = 1L
+)
+```
+
+Under the hood, these vectors are implemented as `raw()` vectors as part of an S3 object. This design allows a great deal of code to be recycled among the various fixed-width types.
+
+```{r}
+unclass(as_uint32(255))
+```

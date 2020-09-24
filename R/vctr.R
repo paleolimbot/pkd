@@ -26,7 +26,8 @@ pkd_ensure_endian <- function(x, endian = pkd_system_endian()) {
   if (identical(unclass(x)$endian, endian)) {
     x
   } else {
-    .Call(pkd_c_swap_endian, x, TRUE)
+    subclass <- class(x)[1]
+    new_pkd_vctr(.Call(pkd_c_swap_endian, x, TRUE), subclass)
   }
 }
 

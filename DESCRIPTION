@@ -19,4 +19,5 @@ Imports:
     vctrs,
     rlang
 Suggests: 
-    testthat
+    testthat,
+    covr
