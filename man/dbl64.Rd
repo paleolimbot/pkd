@@ -8,7 +8,7 @@
 \alias{as_dbl64.integer}
 \alias{as_dbl64.numeric}
 \alias{new_pkd_dbl64}
-\title{Signed 64-bit integer vector}
+\title{Signed 64-bit floating-point vector}
 \usage{
 dbl64(x = raw(), endian = pkd_system_endian())
 
@@ -26,7 +26,7 @@ new_pkd_dbl64(x)
 }
 \arguments{
 \item{x}{A \code{\link[=raw]{raw()}} vector of bytes with every eight elements representing an
-individual double-precision floating point value.}
+individual floating point value.}
 
 \item{endian}{0 for the most significant byte first (big endian),
 1 for the least significant byte first (little endian).}
@@ -37,5 +37,5 @@ individual double-precision floating point value.}
 A pkd_vctr of class pkd_dbl64
 }
 \description{
-Signed 64-bit integer vector
+Signed 64-bit floating-point vector
 }

@@ -1,8 +1,8 @@
 
-#' Signed 64-bit integer vector
+#' Signed 64-bit floating-point vector
 #'
 #' @param x A [raw()] vector of bytes with every eight elements representing an
-#'   individual double-precision floating point value.
+#'   individual floating point value.
 #' @param ... Unused
 #' @inheritParams pkd_as_r_vector
 #'
