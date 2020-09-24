@@ -8,16 +8,7 @@ SEXP int8_new() {
 }
 
 SEXP pkd_c_int8_from_integer(SEXP intVector) {
-  R_xlen_t len = Rf_xlength(intVector);
-
-  SEXP data = PROTECT(Rf_allocVector(RAWSXP, len / sizeof(int8_t)));
-  int8_t* pData = (int8_t*) RAW(data);
-
-  int* pIntVector = INTEGER(intVector);
-
-  for (R_xlen_t i = 0; i < len; i++) {
-    pData[i] = pIntVector[i];
-  }
+  PKD_DATA_FROM_INTEGER(intVector, int8_t);
 
   SEXP pkd = PROTECT(int8_new());
   SET_VECTOR_ELT(pkd, 0, data);
@@ -27,32 +18,13 @@ SEXP pkd_c_int8_from_integer(SEXP intVector) {
 }
 
 SEXP pkd_c_int8_to_integer(SEXP pkd) {
-  R_xlen_t len = PKD_XLENGTH(pkd);
-
-  SEXP intVector = PROTECT(Rf_allocVector(INTSXP, len));
-  int* pIntVector = INTEGER(intVector);
-
-  int8_t* pData = (int8_t*) PKD_DATA(pkd);
-
-  for (R_xlen_t i = 0; i < len; i++) {
-    pIntVector[i] = pData[i];
-  }
-
+  PKD_INT_VECTOR_FROM_PKD(pkd, int8_t);
   UNPROTECT(1);
   return intVector;
 }
 
 SEXP pkd_c_int8_from_double(SEXP dblVector) {
-  R_xlen_t len = Rf_xlength(dblVector);
-
-  SEXP data = PROTECT(Rf_allocVector(RAWSXP, len / sizeof(int8_t)));
-  int8_t* pData = (int8_t*) RAW(data);
-
-  double* pDblVector = REAL(dblVector);
-
-  for (R_xlen_t i = 0; i < len; i++) {
-    pData[i] = pDblVector[i];
-  }
+  PKD_DATA_FROM_DOUBLE(dblVector, int8_t);
 
   SEXP pkd = PROTECT(int8_new());
   SET_VECTOR_ELT(pkd, 0, data);
@@ -62,17 +34,7 @@ SEXP pkd_c_int8_from_double(SEXP dblVector) {
 }
 
 SEXP pkd_c_int8_to_double(SEXP pkd) {
-  R_xlen_t len = PKD_XLENGTH(pkd);
-
-  SEXP dblVector = PROTECT(Rf_allocVector(REALSXP, len));
-  double* pDblVector = REAL(dblVector);
-
-  int8_t* pData = (int8_t*) PKD_DATA(pkd);
-
-  for (R_xlen_t i = 0; i < len; i++) {
-    pDblVector[i] = pData[i];
-  }
-
+  PKD_DBL_VECTOR_FROM_PKD(pkd, int8_t);
   UNPROTECT(1);
   return dblVector;
 }

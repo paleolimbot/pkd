@@ -89,3 +89,40 @@ static inline SEXP pkd_new(const char** attrNames) {
   UNPROTECT(5);
   return newPkd;
 }
+
+
+#define PKD_DATA_FROM_INTEGER(intVector_, ctype_)                 \
+R_xlen_t len = Rf_xlength(intVector);                             \
+SEXP data = PROTECT(Rf_allocVector(RAWSXP, len * sizeof(ctype_)));\
+ctype_* pData = (ctype_*) RAW(data);                              \
+int* pIntVector = INTEGER(intVector_);                            \
+for (R_xlen_t i = 0; i < len; i++) {                              \
+  pData[i] = pIntVector[i];                                       \
+}                                                                 \
+
+#define PKD_INT_VECTOR_FROM_PKD(pkd, ctype_)                   \
+R_xlen_t len = PKD_XLENGTH(pkd);                               \
+SEXP intVector = PROTECT(Rf_allocVector(INTSXP, len));         \
+int* pIntVector = INTEGER(intVector);                          \
+ctype_* pData = (ctype_*) PKD_DATA(pkd);                       \
+for (R_xlen_t i = 0; i < len; i++) {                           \
+  pIntVector[i] = pData[i];                                    \
+}
+
+#define PKD_DATA_FROM_DOUBLE(dblVector_, ctype_)                   \
+R_xlen_t len = Rf_xlength(dblVector_);                             \
+SEXP data = PROTECT(Rf_allocVector(RAWSXP, len * sizeof(ctype_))); \
+ctype_* pData = (ctype_*) RAW(data);                               \
+double* pDblVector = REAL(dblVector_);                             \
+for (R_xlen_t i = 0; i < len; i++) {                               \
+  pData[i] = pDblVector[i];                                        \
+}                                                                  \
+
+#define PKD_DBL_VECTOR_FROM_PKD(pkd, ctype_)                   \
+R_xlen_t len = PKD_XLENGTH(pkd);                               \
+SEXP dblVector = PROTECT(Rf_allocVector(REALSXP, len));        \
+double* pDblVector = REAL(dblVector);                          \
+ctype_* pData = (ctype_*) PKD_DATA(pkd);                       \
+for (R_xlen_t i = 0; i < len; i++) {                           \
+  pDblVector[i] = pData[i];                                    \
+}
