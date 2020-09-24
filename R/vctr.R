@@ -16,7 +16,7 @@ pkd_as_r_vector <- function(x) {
 #' @export
 pkd_swap_endian <- function(x) {
   assert_pkd_vctr(x)
-  .Call(pkd_c_swap_endian, x)
+  .Call(pkd_c_swap_endian, x, TRUE)
 }
 
 #' @rdname pkd_as_r_vector
@@ -26,7 +26,7 @@ pkd_ensure_endian <- function(x, endian = pkd_system_endian()) {
   if (identical(unclass(x)$endian, endian)) {
     x
   } else {
-    .Call(pkd_c_swap_endian, x)
+    .Call(pkd_c_swap_endian, x, TRUE)
   }
 }
 
