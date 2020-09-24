@@ -10,7 +10,7 @@
 #define PKD_ATTR(pkd) VECTOR_ELT(pkd, 3)
 
 #define PKD_XSIZE(pkd) Rf_xlength(PKD_DATA_SEXP(pkd))
-#define PKD_XLENGTH(pkd) PKD_XSIZE(pkd) * PKD_SIZEOF(pkd)
+#define PKD_XLENGTH(pkd) PKD_XSIZE(pkd) / PKD_SIZEOF(pkd)
 
 #define PKD_BIG_ENDIAN 0
 #define PKD_LITTLE_ENDIAN 1
