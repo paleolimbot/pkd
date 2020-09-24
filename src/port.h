@@ -1,11 +1,16 @@
 
+#include <Rconfig.h>
+
 // from s2 library port.h
 
 // IS_LITTLE_ENDIAN, IS_BIG_ENDIAN
 
 // Allow compiler -D defines to override detection here
 // which occasionally fails (e.g., on CRAN Solaris)
-#if defined(IS_LITTLE_ENDIAN)
+#if defined(WORDS_BIG_ENDIAN)
+#define IS_BIG_ENDIAN
+#undef IS_LITTLE_ENDIAN
+#elif defined(IS_LITTLE_ENDIAN)
 #undef IS_BIG_ENDIAN
 #elif defined(IS_BIG_ENDIAN)
 #undef IS_LITTLE_ENDIAN
@@ -77,6 +82,12 @@
 #include <byteswap.h>  // IWYU pragma: export
 
 #else
+
+#ifdef __cplusplus
+#include <cstdint.h>
+#else
+#include <stdint.h>
+#endif
 
 static inline uint16_t bswap_16(uint16_t x) {
 #ifdef __cplusplus
