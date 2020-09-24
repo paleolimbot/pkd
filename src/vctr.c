@@ -119,17 +119,41 @@ SEXP pkd_c_expand_indices(SEXP pkd, SEXP indices) {
     int* pIndices = LOGICAL(indices);
 
     for (R_xlen_t i = 0; i < indexSize; i++) {
+      if (pIndices[i] == NA_LOGICAL) {
+        Rf_error("Can't subset-assign a 'pkd_vctr' with NA");
+      }
       int newValue = 0 != pIndices[i];
       for (int j = 0; j < sizeOf; j++) {
         pNewIndices[i * sizeOf + j] = newValue;
       }
     }
-  //} else if (TYPEOF(indices) == REALSXP) {
-    //newIndices = PROTECT(Rf_allocVector(REALSXP, size));
+  } else if (TYPEOF(indices) == REALSXP) {
+    newIndices = PROTECT(Rf_allocVector(REALSXP, indexSize * sizeOf));
+    double* pNewIndices = REAL(newIndices);
+    double* pIndices = REAL(indices);
 
-  //} else if (TYPEOF(indices) == INTSXP) {
-    //newIndices = PROTECT(Rf_allocVector(INTSXP, size));
+    for (R_xlen_t i = 0; i < indexSize; i++) {
+      if (ISNA(pIndices[i])) {
+        Rf_error("Can't subset-assign a 'pkd_vctr' with NA");
+      }
+      for (int j = 0; j < sizeOf; j++) {
+        pNewIndices[i * sizeOf + j] = (pIndices[i] - 1) * sizeOf + j + 1;
+      }
+    }
 
+  } else if (TYPEOF(indices) == INTSXP) {
+    newIndices = PROTECT(Rf_allocVector(REALSXP, indexSize * sizeOf));
+    double* pNewIndices = REAL(newIndices);
+    int* pIndices = INTEGER(indices);
+
+    for (R_xlen_t i = 0; i < indexSize; i++) {
+      if (pIndices[i] == NA_INTEGER) {
+        Rf_error("Can't subset-assign a 'pkd_vctr' with NA");
+      }
+      for (int j = 0; j < sizeOf; j++) {
+        pNewIndices[i * sizeOf + j] = (pIndices[i] - 1) * sizeOf + j + 1;
+      }
+    }
   } else {
     Rf_error("Can't subset-assign a 'pkd_vctr' with this type of object");
   }

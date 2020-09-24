@@ -51,6 +51,8 @@ test_that("uint16 subset/subset assign works", {
 
   x_cpy <- x
   expect_error(x_cpy[c(TRUE, TRUE)] <- 8, "Can't subset-assign")
+  expect_error(x_cpy[rep(NA, 6)] <- 8, "Can't subset-assign")
+  expect_error(x_cpy[rep(NA_real_, 6)] <- 8, "Can't subset-assign")
 
   # paired number of sets
   x_cpy[c(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE)] <- c(99, 100)
@@ -59,5 +61,15 @@ test_that("uint16 subset/subset assign works", {
   # recycled number of sets
   x_cpy <- x
   x_cpy[c(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE)] <- 55
+  expect_identical(as.integer(x_cpy), c(55L, 2L, 3L, 65535L, 5L, 55L))
+
+  # integer
+  x_cpy <- x
+  x_cpy[c(1L, 6L)] <- 55
+  expect_identical(as.integer(x_cpy), c(55L, 2L, 3L, 65535L, 5L, 55L))
+
+  # double
+  x_cpy <- x
+  x_cpy[c(1, 6)] <- 55
   expect_identical(as.integer(x_cpy), c(55L, 2L, 3L, 65535L, 5L, 55L))
 })
