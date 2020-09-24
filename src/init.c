@@ -10,6 +10,10 @@ extern SEXP pkd_c_int8_to_double(SEXP pkd);
 extern SEXP pkd_c_lgl1_length(SEXP pkd);
 extern SEXP pkd_c_lgl1_to_logical(SEXP pkd);
 extern SEXP pkd_c_lgl1_from_logical(SEXP lgl);
+extern SEXP pkd_c_uint16_from_integer(SEXP intVector);
+extern SEXP pkd_c_uint16_to_integer(SEXP pkd);
+extern SEXP pkd_c_uint16_from_double(SEXP dblVector);
+extern SEXP pkd_c_uint16_to_double(SEXP pkd);
 extern SEXP pkd_c_subset(SEXP pkd, SEXP indices);
 extern SEXP pkd_c_expand_indices(SEXP pkd, SEXP indices);
 extern SEXP pkd_c_system_endian();
@@ -23,6 +27,10 @@ static const R_CallMethodDef CallEntries[] = {
   {"pkd_c_lgl1_length", (DL_FUNC) &pkd_c_lgl1_length, 1},
   {"pkd_c_lgl1_to_logical", (DL_FUNC) &pkd_c_lgl1_to_logical, 1},
   {"pkd_c_lgl1_from_logical", (DL_FUNC) &pkd_c_lgl1_from_logical, 1},
+  {"pkd_c_uint16_from_integer", (DL_FUNC) &pkd_c_uint16_from_integer, 1},
+  {"pkd_c_uint16_to_integer", (DL_FUNC) &pkd_c_uint16_to_integer, 1},
+  {"pkd_c_uint16_from_double", (DL_FUNC) &pkd_c_uint16_from_double, 1},
+  {"pkd_c_uint16_to_double", (DL_FUNC) &pkd_c_uint16_to_double, 1},
   {"pkd_c_subset", (DL_FUNC) &pkd_c_subset, 2},
   {"pkd_c_expand_indices", (DL_FUNC) &pkd_c_expand_indices, 2},
   {"pkd_c_system_endian", (DL_FUNC) &pkd_c_system_endian, 0},

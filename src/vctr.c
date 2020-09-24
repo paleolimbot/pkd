@@ -25,10 +25,10 @@ SEXP pkd_subset_lgl(SEXP pkd, SEXP lgl) {
     outLength += 0 != pLgl[i];
   }
 
-  SEXP lgl8 = PROTECT(Rf_allocVector(RAWSXP, outLength));
+  int sizeOf = PKD_SIZEOF(pkd);
+  SEXP lgl8 = PROTECT(Rf_allocVector(RAWSXP, outLength * sizeOf));
   unsigned char* data = PKD_DATA(pkd);
   unsigned char* outData = RAW(lgl8);
-  int sizeOf = PKD_SIZEOF(pkd);
 
   for (R_xlen_t i = 0; i < size; i++) {
     if (pLgl[i]) {
@@ -121,7 +121,7 @@ SEXP pkd_c_expand_indices(SEXP pkd, SEXP indices) {
     for (R_xlen_t i = 0; i < indexSize; i++) {
       int newValue = 0 != pIndices[i];
       for (int j = 0; j < sizeOf; j++) {
-        pNewIndices[i + j] = newValue;
+        pNewIndices[i * sizeOf + j] = newValue;
       }
     }
   //} else if (TYPEOF(indices) == REALSXP) {
