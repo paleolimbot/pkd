@@ -11,6 +11,10 @@ extern SEXP pkd_c_int32_from_integer(SEXP intVector);
 extern SEXP pkd_c_int32_to_integer(SEXP pkd);
 extern SEXP pkd_c_int32_from_double(SEXP dblVector);
 extern SEXP pkd_c_int32_to_double(SEXP pkd);
+extern SEXP pkd_c_int64_from_integer(SEXP intVector);
+extern SEXP pkd_c_int64_to_integer(SEXP pkd);
+extern SEXP pkd_c_int64_from_double(SEXP dblVector);
+extern SEXP pkd_c_int64_to_double(SEXP pkd);
 extern SEXP pkd_c_int8_from_integer(SEXP intVector);
 extern SEXP pkd_c_int8_to_integer(SEXP pkd);
 extern SEXP pkd_c_int8_from_double(SEXP dblVector);
@@ -40,6 +44,10 @@ static const R_CallMethodDef CallEntries[] = {
   {"pkd_c_int32_to_integer", (DL_FUNC) &pkd_c_int32_to_integer, 1},
   {"pkd_c_int32_from_double", (DL_FUNC) &pkd_c_int32_from_double, 1},
   {"pkd_c_int32_to_double", (DL_FUNC) &pkd_c_int32_to_double, 1},
+  {"pkd_c_int64_from_integer", (DL_FUNC) &pkd_c_int64_from_integer, 1},
+  {"pkd_c_int64_to_integer", (DL_FUNC) &pkd_c_int64_to_integer, 1},
+  {"pkd_c_int64_from_double", (DL_FUNC) &pkd_c_int64_from_double, 1},
+  {"pkd_c_int64_to_double", (DL_FUNC) &pkd_c_int64_to_double, 1},
   {"pkd_c_int8_from_integer", (DL_FUNC) &pkd_c_int8_from_integer, 1},
   {"pkd_c_int8_to_integer", (DL_FUNC) &pkd_c_int8_to_integer, 1},
   {"pkd_c_int8_from_double", (DL_FUNC) &pkd_c_int8_from_double, 1},
